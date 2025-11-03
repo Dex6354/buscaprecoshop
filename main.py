@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 # Dimensões para a visualização (ajuste conforme necessário)
-ALTURA_IFRAME = 700  # Altura em pixels para a visualização
+ALTURA_IFRAME = 500  # Altura em pixels para a visualização
 LARGURA_IFRAME = "100%" # Largura total da coluna
 BUFFER_ALTURA_STREAMLIT = 30 # Buffer para acomodar títulos/espaçamento no Streamlit
 

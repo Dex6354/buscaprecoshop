@@ -8,7 +8,7 @@ st.set_page_config(
 
 # --- Configurações de Tamanho e Zoom ---
 ALTURA_IFRAME = 500  # Altura base do viewport do iframe em pixels
-LARGURA_IFRAME_EMBED = "90%" # Usar um valor fixo ou '100%' da coluna, mas 'scale' funciona melhor com base fixa
+LARGURA_IFRAME_EMBED = "80%" # Usar um valor fixo ou '100%' da coluna, mas 'scale' funciona melhor com base fixa
 BUFFER_ALTURA_STREAMLIT = 30 
 
 # NOVO: Fator de escala para simular o zoom. 

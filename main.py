@@ -7,22 +7,23 @@ st.set_page_config(
 )
 
 # --- Configurações de Tamanho e Zoom ---
-ALTURA_IFRAME = 500  # Altura base do viewport do iframe em pixels
-LARGURA_IFRAME_EMBED = "80%" # Usar um valor fixo ou '100%' da coluna, mas 'scale' funciona melhor com base fixa
-BUFFER_ALTURA_STREAMLIT = 30 
+# O FATOR_ZOOM controla o quão pequeno o conteúdo aparecerá (0.4 = 40% do tamanho original)
+FATOR_ZOOM = 0.4 
 
-# NOVO: Fator de escala para simular o zoom. 
-# 1.0 = 100% (tamanho normal)
-# 0.8 = 80% (conteúdo parece 20% menor)
-FATOR_ZOOM = 0.4
+# Definimos a LARGURA/ALTURA BASE que o iframe renderizará ANTES do scale.
+# Escolha um valor grande o suficiente para o conteúdo caber.
+LARGURA_BASE_PIXELS = 1000 # Tamanho base para o conteúdo caber
+ALTURA_BASE_PIXELS = 1000  # Tamanho base para o conteúdo caber
 
-# Calcula a largura e altura ajustadas para o 'scale'
-# O navegador renderiza o iframe no tamanho base (ex: 800px) e depois o escala.
-LARGURA_AJUSTADA = "800px" # Tamanho base maior que o desejado para compensar a escala
-ALTURA_AJUSTADA = "800px" # Tamanho base maior que o desejado para compensar a escala
+BUFFER_ALTURA_STREAMLIT = 30 # Espaço extra para a rolagem do componente
 
-# O height final do componente Streamlit deve ser a altura base escalada, mais o buffer
-ALTURA_FINAL_STREAMLIT = int(int(ALTURA_AJUSTADA.replace("px", "")) * FATOR_ZOOM) + BUFFER_ALTURA_STREAMLIT
+# Calcula a altura final do componente Streamlit (altura base escalada + buffer)
+ALTURA_FINAL_STREAMLIT = int(ALTURA_BASE_PIXELS * FATOR_ZOOM) + BUFFER_ALTURA_STREAMLIT
+
+# A largura final visível será a Largura Base * FATOR_ZOOM.
+# Para que ele ocupe mais espaço na tela, você pode aumentar LARGURA_BASE_PIXELS.
+# **A variável LARGURA_IFRAME_EMBED não é mais necessária nesta abordagem com scale.**
+
 # --- Fim das Configurações ---
 
 
@@ -46,15 +47,15 @@ for i, link_produto in enumerate(lista_de_urls):
     # --- AJUSTES COM CSS TRANSFORM: SCALE ---
     
     # O style define:
-    # 1. Um tamanho base grande (800px) para o conteúdo caber.
+    # 1. Um tamanho base grande (LARGURA_BASE_PIXELS/ALTURA_BASE_PIXELS).
     # 2. transform: scale(FATOR_ZOOM) para diminuir a exibição.
     # 3. transform-origin: top left; garante que o "zoom" parta do canto superior esquerdo.
     
     html_content = f"""
     <iframe 
         src="{link_produto}" 
-        width="{LARGURA_AJUSTADA}" 
-        height="{ALTURA_AJUSTADA}"
+        width="{LARGURA_BASE_PIXELS}px" 
+        height="{ALTURA_BASE_PIXELS}px"
         style="
             border: 1px solid #ccc; /* Para visualização */
             transform: scale({FATOR_ZOOM}); 

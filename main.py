@@ -13,12 +13,12 @@ PRODUTOS = [
     {
         "nome": "Bermuda Oxer Training 7",
         "url": "https://www.centauro.com.br/bermuda-masculina-oxer-training-7-tecido-plano-981429.html?cor=02",
-        "alvo": 45.0
+        "alvo": 50.0
     },
     {
         "nome": "Bermuda Oxer Elastic",
         "url": "https://www.centauro.com.br/bermuda-masculina-oxer-elastic-984818.html?cor=02",
-        "alvo": 45.0
+        "alvo": 50.0
     }
 ]
 

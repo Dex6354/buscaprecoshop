@@ -1,80 +1,54 @@
-# app.py
-import requests
-from bs4 import BeautifulSoup
-from flask import Flask, jsonify, request
+import streamlit as st
+from streamlit.components.v1 import html
 
-app = Flask(__name__)
+# Configuração básica da página
+st.set_page_config(
+    layout="wide", 
+    page_title="Monitor de Preços - Embed Centauro"
+)
 
-# URL alvo fixada (pode ser passada como parâmetro, mas vamos fixar por simplicidade)
-URL_PRODUTO = "https://www.centauro.com.br/bermuda-masculina-oxer-elastic-984818.html?cor=02"
+st.title("🔗 Monitor de Preços (Tentativa de Embed Direto)")
 
-# Headers robustos para tentar evitar o 403 (ajuste se necessário)
-HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Accept-Language': 'pt-BR,pt;q=0.9',
-    'Referer': 'https://www.centauro.com.br/' 
-}
+# --- AVISO IMPORTANTE ---
+st.warning(
+    "**ATENÇÃO:** A incorporação direta de sites de e-commerce (como a Centauro) usando `<iframe>` é frequentemente bloqueada por políticas de segurança (CSP). Se você ver uma tela em branco ou um erro de carregamento, significa que o site bloqueou a visualização interna. Neste caso, a Opção 2 (Web Scraping) seria a alternativa funcional."
+)
 
-# ----------------------------------------------------
-# Lógica de Scraping (Reaproveitando a melhor tentativa)
-# ----------------------------------------------------
+# Dimensões para a visualização (ajuste conforme necessário)
+ALTURA_IFRAME = 700  # Altura em pixels para a visualização
+LARGURA_IFRAME = "100%" # Largura total da coluna
 
-def extrair_conteudo_centauro(url, headers):
-    """
-    Acessa a URL e tenta extrair informações do produto com headers robustos.
-    A lógica de cookies de sessão foi removida para simplificar a hospedagem,
-    mas pode ser reintroduzida se o Render permitir.
-    """
-    try:
-        # Tenta a requisição diretamente com headers robustos
-        resposta = requests.get(url, headers=headers, timeout=20)
-        resposta.raise_for_status() # Levanta erro para 4xx ou 5xx
-        
-        soup = BeautifulSoup(resposta.content, 'html.parser')
-        
-        # Tentativas de extração de dados (simplificadas)
-        titulo_tag = soup.find('title')
-        nome_produto = soup.find('h1') 
-        preco_element = soup.find('span', class_='centauro-product-price-2-x-sellingPrice') 
-        
-        dados = {
-            'status': 'sucesso',
-            'titulo_pagina': titulo_tag.text.strip() if titulo_tag else 'Não encontrado',
-            'nome_produto': nome_produto.text.strip() if nome_produto else 'Não encontrado',
-            'preco_venda': preco_element.get_text(strip=True) if preco_element else 'Não encontrado',
-        }
-        return dados
+# -------------------------------------------------------------------
+# 1. EMBED PARA O PRIMEIRO PRODUTO
+# -------------------------------------------------------------------
+st.header("Bermuda Oxer Basic")
+link1 = "https://www.centauro.com.br/bermuda-masculina-oxer-ls-basic-new-984889.html?cor=04"
 
-    except requests.exceptions.HTTPError as e:
-        # Se falhar (ex: 403), retorna o erro
-        return {
-            'status': 'erro',
-            'mensagem': f"Falha HTTP. Status: {e.response.status_code}. O site pode ter bloqueado o scraper.",
-            'detalhe': str(e)
-        }
-    except Exception as e:
-        return {
-            'status': 'erro',
-            'mensagem': f"Erro na conexão ou na análise do HTML: {str(e)}",
-            'detalhe': str(e)
-        }
+st.markdown(f"**Link Original:** [{link1}]({link1})", unsafe_allow_html=True)
 
-# ----------------------------------------------------
-# ROTA API (Onde o Render vai expor o serviço)
-# ----------------------------------------------------
+# Criação do conteúdo HTML para o iFrame
+# Adicionamos um buffer de altura (+30) para acomodar títulos/espaçamento no Streamlit
+html_content1 = f'<iframe src="{link1}" width="{LARGURA_IFRAME}" height="{ALTURA_IFRAME}px"></iframe>'
 
-@app.route('/')
-def get_produto_info():
-    """
-    Rota principal que executa o scraping e retorna os dados em JSON.
-    """
-    dados = extrair_conteudo_centauro(URL_PRODUTO, HEADERS)
-    
-    # Flask/Render espera que a resposta seja JSON
-    return jsonify(dados)
+# Exibe o componente HTML/iFrame
+# O `height` do st.components.v1.html precisa ser ligeiramente maior que a altura do iFrame
+st.components.v1.html(html_content1, height=ALTURA_IFRAME + 30)
 
-if __name__ == '__main__':
-    # Esta parte é para rodar localmente, mas o Render usará o Gunicorn/Start Command
-    app.run(debug=True)
+# -------------------------------------------------------------------
+# SEPARADOR VISUAL
+# -------------------------------------------------------------------
+st.markdown("---")
+
+# -------------------------------------------------------------------
+# 2. EMBED PARA O SEGUNDO PRODUTO
+# -------------------------------------------------------------------
+st.header("Bermuda Oxer Mesh")
+link2 = "https://www.centauro.com.br/bermuda-masculina-oxer-mesh-mescla-983436.html?cor=MS"
+
+st.markdown(f"**Link Original:** [{link2}]({link2})", unsafe_allow_html=True)
+
+# Criação do conteúdo HTML para o iFrame
+html_content2 = f'<iframe src="{link2}" width="{LARGURA_IFRAME}" height="{ALTURA_IFRAME}px"></iframe>'
+
+# Exibe o componente HTML/iFrame
+st.components.v1.html(html_content2, height=ALTURA_IFRAME + 30)

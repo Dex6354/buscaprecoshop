@@ -12,7 +12,7 @@ FATOR_ZOOM = 0.4
 
 # Definimos a LARGURA/ALTURA BASE que o iframe renderizará ANTES do scale.
 # Escolha um valor grande o suficiente para o conteúdo caber.
-LARGURA_BASE_PIXELS = "100%" # Tamanho base para o conteúdo caber
+LARGURA_BASE_PIXELS = "200%" # Tamanho base para o conteúdo caber
 ALTURA_BASE_PIXELS = 1000  # Tamanho base para o conteúdo caber
 
 BUFFER_ALTURA_STREAMLIT = 30 # Espaço extra para a rolagem do componente

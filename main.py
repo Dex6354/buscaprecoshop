@@ -16,10 +16,22 @@ st.markdown(
             height: 0%;
         }
         
-        /* Remove o padding superior do corpo da aplicação Streamlit, 
-           forçando o conteúdo a começar no topo da janela */
+        /* Remove o padding superior do corpo da aplicação Streamlit */
         .stApp {
             padding-top: 0px !important; 
+        }
+        
+        /* ESTILO DO TÍTULO FIXO */
+        #titulo-topo {
+            position: fixed; /* Garante que o título fique fixo no topo da janela */
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: white; /* Adiciona um fundo para garantir que não fique por baixo de outros elementos */
+            padding: 10px 20px;
+            z-index: 1000; /* Garante que fique acima de outros conteúdos */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Opcional: Sombra sutil */
+            margin: 0; /* Remove margem padrão */
         }
     </style>
     """,
@@ -27,7 +39,7 @@ st.markdown(
 )
 
 # 2. INSERÇÃO DO TÍTULO FIXO NO TOPO
-# Este H1 será fixo e ficará acima do conteúdo rolante abaixo
+# Este H3 agora está configurado com position: fixed no CSS acima
 st.markdown('<h3 id="titulo-topo">Monitor de Preços</h3>', unsafe_allow_html=True)
 
 FATOR_ZOOM = 0.5
@@ -46,9 +58,10 @@ lista_de_urls = [
 
 # Como o título agora está fixo (position: fixed), precisamos adicionar um espaçamento
 # no conteúdo principal (abaixo dele) para que o conteúdo não fique por baixo do título fixo.
-PADDING_DO_TITULO_FIXO = 60 # Deve ser maior que a altura do seu título fixo (que tem ~40px de padding)
+PADDING_DO_TITULO_FIXO = 60 # Deve ser maior que a altura do seu título fixo (que agora tem padding de 10px + altura do h3)
 
 # 3. CONTEÚDO PRINCIPAL (COM PAD INICIAL)
+# Aplica o padding superior para empurrar o conteúdo para baixo do título fixo
 st.markdown(f'<div style="padding-top: {PADDING_DO_TITULO_FIXO}px;">', unsafe_allow_html=True)
 
 # Usamos enumerate para obter o índice (i) e a URL (link_produto)

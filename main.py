@@ -36,7 +36,7 @@ ALTURA_FINAL_STREAMLIT = int(ALTURA_BASE_PIXELS * FATOR_ZOOM) + BUFFER_ALTURA_ST
 precos_e_links = [
     ("R$ 79,90", "https://www.centauro.com.br/bermuda-masculina-oxer-ls-basic-new-984889.html?cor=04"),
     ("R$ 50,00", "https://www.centauro.com.br/bermuda-masculina-oxer-mesh-mescla-983436.html?cor=MS"),
-    ("R$ 50,00", "https://outrolink.com/produto-b.html"), # Não há conflito aqui
+    ("R$ 50,00", "https://www.centauro.com.br/calcao-masculino-adams-liso-978059.html?cor=02"), # Não há conflito aqui
 ]
 # --- FIM DA ESTRUTURA ---
 

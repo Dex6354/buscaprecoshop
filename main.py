@@ -34,6 +34,7 @@ ALTURA_FINAL_STREAMLIT = int(ALTURA_BASE_PIXELS * FATOR_ZOOM) + BUFFER_ALTURA_ST
 lista_de_urls = [
     "https://www.centauro.com.br/bermuda-masculina-oxer-ls-basic-new-984889.html?cor=04",
     "https://www.centauro.com.br/bermuda-masculina-oxer-mesh-mescla-983436.html?cor=MS",
+    "https://www.centauro.com.br/calcao-masculino-adams-liso-978059.html?cor=02",
 ]
 
 # Título principal diminuído (usando h2 em vez de h1)

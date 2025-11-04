@@ -36,8 +36,8 @@ ALTURA_FINAL_STREAMLIT = int(ALTURA_BASE_PIXELS * FATOR_ZOOM) + BUFFER_ALTURA_ST
 precos_e_links = [
     ("R$ 31,72", "https://www.centauro.com.br/bermuda-masculina-oxer-ls-basic-new-984889.html?cor=04"),
     ("R$ 53,99", "https://www.centauro.com.br/bermuda-masculina-oxer-mesh-mescla-983436.html?cor=MS"),
-    ("R$ 31,49", "https://www.centauro.com.br/calcao-masculino-adams-liso-978059.html?cor=02"), # Não há conflito aqui
-    ("R$ 1794", "https://shopee.com.br/Xiaomi-Poco-X7-Pro-512GB-256GB-12-Ram-5G-Vers%C3%A3o-Global-NFC-Original-Lacrado-e-Envio-Imediato-ADS-i.1351433975.20698075298"), # Corrigido abaixo
+    ("R$ 31,49", "https://www.centauro.com.br/calcao-masculino-adams-liso-978059.html?cor=02"),
+    ("R$ 1794", "https://shopee.com.br/Xiaomi-Poco-X7-Pro-512GB-256GB-12-Ram-5G-Vers%C3%A3o-Global-NFC-Original-Lacrado-e-Envio-Imediato-ADS-i.1351433975.20698075298"),
 ]
 # --- FIM DA ESTRUTURA ---
 
@@ -47,12 +47,25 @@ st.markdown("<h6>🔎 Monitor de Preço</h6>", unsafe_allow_html=True)
 # Iteramos sobre a lista de tuplas: (Preço, Link)
 for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     
-    # CORREÇÃO APLICADA AQUI:
-    # Se o link for da Shopee, adicionamos o parâmetro para forçar a visualização na web
+    link_final_iframe = link_produto
+    exibir_iframe = True
+    
+    # --- TRATAMENTO PARA SHOPEE (E OUTROS QUE FORÇAM O APP) ---
     if "shopee.com.br" in link_produto:
-        # Como o seu link da Shopee não tem '?', podemos adicionar o parâmetro diretamente
-        link_produto += "?is_from_app=false" 
         
+        # 1. Tenta anexar o parâmetro de desativação de app
+        if '?' in link_produto:
+            # Se já tem '?', anexa com '&'
+            link_final_iframe = link_produto + "&is_from_app=false"
+        else:
+            # Se não tem, anexa com '?'
+            link_final_iframe = link_produto + "?is_from_app=false"
+
+        # 2. Estratégia de fallback: Ignorar o iframe, pois ele falha
+        # Se você tentou o parâmetro e ainda falha (o que parece ser o caso), 
+        # avisamos o usuário e mostramos o link direto no título, pulando o iframe.
+        exibir_iframe = False 
+    
     nome_produto = f"{i + 1}" # Número de ordem
     
     # Exibição: O preço (primeiro elemento da tupla) é exibido em destaque e o link é oculto no texto "Acessar Produto"
@@ -66,22 +79,27 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     </div>
     """, unsafe_allow_html=True)
     
-    html_content = f"""
-    <iframe 
-        src="{link_produto}" 
-        width="{LARGURA_BASE_PIXELS}px" 
-        height="{ALTURA_BASE_PIXELS}px"
-        style="
-            border: 1px solid #ddd; /* Borda mais suave */
-            transform: scale({FATOR_ZOOM}); 
-            transform-origin: top left;
-            margin-top: 5px; 
-        " 
-    ></iframe>
-    """
+    if exibir_iframe:
+        # Apenas carrega o iframe se não for Shopee (ou se o parâmetro funcionar)
+        html_content = f"""
+        <iframe 
+            src="{link_final_iframe}" 
+            width="{LARGURA_BASE_PIXELS}px" 
+            height="{ALTURA_BASE_PIXELS}px"
+            style="
+                border: 1px solid #ddd; /* Borda mais suave */
+                transform: scale({FATOR_ZOOM}); 
+                transform-origin: top left;
+                margin-top: 5px; 
+            " 
+        ></iframe>
+        """
+        # Exibe o componente HTML/iFrame
+        st.components.v1.html(html_content, height=ALTURA_FINAL_STREAMLIT)
+    else:
+        # Mensagem para o usuário sobre a impossibilidade de embutir
+        st.warning(f"🛑 O link da **Shopee** (Produto {nome_produto}) está sendo forçado para o app. Use o link **'Acessar Produto'** acima para ver no navegador.")
 
-    # Exibe o componente HTML/iFrame
-    st.components.v1.html(html_content, height=ALTURA_FINAL_STREAMLIT)
     
     # SEPARADOR VISUAL entre os produtos
     st.markdown("---")

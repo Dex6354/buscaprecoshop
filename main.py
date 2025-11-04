@@ -28,7 +28,6 @@ st.markdown(
             top: 0;
             left: 0;
             width: 100%; /* Ocupa toda a largura */
-            background-color: white; /* Cor de fundo para cobrir o conteúdo que pode rolar por baixo */
             padding: 10px 20px; /* Espaçamento interno */
             box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Uma sombra sutil para destaque */
             z-index: 1000; /* Garante que ele fique acima de outros elementos */

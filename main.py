@@ -41,7 +41,7 @@ precos_e_links = [
 # --- FIM DA ESTRUTURA ---
 
 # Título principal diminuído (usando h2 em vez de h1)
-st.markdown("<h6>🛒 Preços Mercados</h6>", unsafe_allow_html=True)
+st.markdown("<h6>🔎 Monitor de Preço</h6>", unsafe_allow_html=True)
 
 # Iteramos sobre a lista de tuplas: (Preço, Link)
 for i, (preco_desejado, link_produto) in enumerate(precos_e_links):

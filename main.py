@@ -9,35 +9,23 @@ st.set_page_config(
 # 1. REFINANDO O CSS PARA FORÇAR O CONTEÚDO AO TOPO
 st.markdown(
     """
-    <style>
-        /* Oculta o cabeçalho padrão do Streamlit */
-        [data-testid="stHeader"] {
-            visibility: hidden;
-            height: 0%;
-        }
-        
-        /* **AÇÃO PRINCIPAL AQUI:** Remove o padding superior padrão do corpo da aplicação Streamlit */
-        .stApp {
-            padding-top: 0px !important; /* Remove qualquer espaço superior */
-        }
+    
+<style>
+    [data-testid="stAppViewContainer"] {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+    [data-testid="stHeader"] {
+        display: none !important;
+    }
+    .stApp {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+</style>
+""", unsafe_allow_html=True)
 
-        /* Estilo para o título que está no topo, garantindo que não tenha margem */
-        #titulo-principal {
-            margin-top: 0px !important;
-            padding-top: 0px !important;
-            /* Adicionando uma margem inferior pequena para separar do conteúdo abaixo */
-            margin-bottom: 15px !important; 
-        }
 
-        /* Ajuste opcional para o container flex dos links abaixo, para maior proximidade com o título principal */
-        .produto-header-container {
-            margin-top: 20px;
-            margin-bottom: -10px;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
 # 2. Coloque o Título Principal Imediatamente no Topo
 # Usamos um H1 estilizado para ser o topo da página.

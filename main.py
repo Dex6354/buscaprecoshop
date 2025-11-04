@@ -1,100 +1,116 @@
 import streamlit as st
+import requests
+from bs4 import BeautifulSoup
 from streamlit.components.v1 import html
 
-st.set_page_config(
-    layout="wide", 
-    page_title="Monitor de Preços"
-)
+st.set_page_config(layout="wide", page_title="Monitor de Preços")
 
-st.markdown(
-    """
-    <style>
-    [data-testid="stHeader"] {
-            visibility: hidden;
-            height: 0%;
-        }
-        .block-container { padding-top: 0rem; }
-        footer {visibility: hidden;}
-        #MainMenu {visibility: hidden;}
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+# ---- Oculta cabeçalhos padrão ----
+st.markdown("""
+<style>
+[data-testid="stHeader"] {visibility: hidden; height: 0%;}
+.block-container {padding-top: 0rem;}
+footer, #MainMenu {visibility: hidden;}
+.card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 1px 1px 6px rgba(0,0,0,0.05);
+    transition: all 0.2s ease-in-out;
+}
+.card:hover {
+    transform: scale(1.01);
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.15);
+}
+.card img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+.card h4 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+.card a {
+    text-decoration: none;
+    color: inherit;
+}
+</style>
+""", unsafe_allow_html=True)
 
-FATOR_ZOOM = 0.5
-
-LARGURA_BASE_PIXELS = "150%" # Tamanho base para o conteúdo caber
-ALTURA_BASE_PIXELS = 1000  # Tamanho base para o conteúdo caber
-
-BUFFER_ALTURA_STREAMLIT = 30 # Espaço extra para a rolagem do componente
-
-# Calcula a altura final do componente Streamlit (altura base escalada + buffer)
-ALTURA_FINAL_STREAMLIT = int(ALTURA_BASE_PIXELS * FATOR_ZOOM) + BUFFER_ALTURA_STREAMLIT
-
-# --- ESTRUTURA DE DADOS UTILIZADA (LISTA DE TUPLAS) ---
-# A tupla é: (Preço, Link)
+# ---- Lista de produtos ----
 precos_e_links = [
     ("R$ 31,72", "https://www.centauro.com.br/bermuda-masculina-oxer-ls-basic-new-984889.html?cor=04"),
     ("R$ 53,99", "https://www.centauro.com.br/bermuda-masculina-oxer-mesh-mescla-983436.html?cor=MS"),
     ("R$ 31,49", "https://www.centauro.com.br/calcao-masculino-adams-liso-978059.html?cor=02"),
     ("R$ 1794", "https://shopee.com.br/Xiaomi-Poco-X7-Pro-512GB-256GB-12-Ram-5G-Vers%C3%A3o-Global-NFC-Original-Lacrado-e-Envio-Imediato-ADS-i.1351433975.20698075298"),
 ]
-# --- FIM DA ESTRUTURA ---
 
-def limpar_url_shopee(url):
-    """Remove parâmetros de consulta (?) do URL para tentar forçar a visualização web no iframe."""
-    if "shopee.com.br" in url:
-        # Encontra a primeira ocorrência de '?'
-        if '?' in url:
-            # Retorna a parte do URL antes do '?'
-            return url.split('?')[0]
-    return url
+FATOR_ZOOM = 0.5
+LARGURA_BASE_PIXELS = "150%"
+ALTURA_BASE_PIXELS = 1000
+BUFFER_ALTURA_STREAMLIT = 30
+ALTURA_FINAL_STREAMLIT = int(ALTURA_BASE_PIXELS * FATOR_ZOOM) + BUFFER_ALTURA_STREAMLIT
 
-# Título principal diminuído (usando h2 em vez de h1)
 st.markdown("<h6>🔎 Monitor de Preço</h6>", unsafe_allow_html=True)
 
-# Iteramos sobre a lista de tuplas: (Preço, Link)
-for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
-    
-    link_para_iframe = link_produto
-    
-    if "shopee.com.br" in link_produto:
-        # Aplica a limpeza do URL
-        link_para_iframe = limpar_url_shopee(link_produto)
-        
-        # Log/Aviso Visual: Informa que a tentativa de limpeza foi feita.
-        st.warning(f"ℹ️ Produto {i + 1} (Shopee): Tentando carregar a URL limpa no iFrame.")
-        
-    
-    nome_produto = f"{i + 1}" # Número de ordem
-    
-    # Exibição: O preço (primeiro elemento da tupla) é exibido em destaque e o link é oculto no texto "Acessar Produto"
+# ---- Função para puxar preview da Shopee ----
+def preview_shopee(url):
+    """Retorna título, imagem e preço aproximado a partir da meta tag da Shopee."""
+    try:
+        headers = {"User-Agent": "Mozilla/5.0"}
+        r = requests.get(url, headers=headers, timeout=5)
+        soup = BeautifulSoup(r.text, "html.parser")
+
+        title = soup.find("meta", property="og:title")
+        image = soup.find("meta", property="og:image")
+        price = soup.find("meta", property="product:price:amount")
+
+        titulo = title["content"] if title else "Produto Shopee"
+        imagem = image["content"] if image else "https://upload.wikimedia.org/wikipedia/commons/4/4f/Shopee_logo_2021.svg"
+        preco_meta = price["content"] if price else "Ver preço no site"
+
+        return titulo, imagem, preco_meta
+    except Exception as e:
+        return "Produto Shopee (visualização indisponível)", "https://upload.wikimedia.org/wikipedia/commons/4/4f/Shopee_logo_2021.svg", "Ver no site"
+
+# ---- Loop principal ----
+for i, (preco, link) in enumerate(precos_e_links):
+    nome_produto = f"{i + 1})"
+
     st.markdown(f"""
     <div style="display: flex; align-items: baseline; gap: 15px; margin-bottom: -10px;">
-        <h2 style="margin-bottom: 0;">{nome_produto})</h2>
-        <p style="margin-bottom: 0; font-size: 1.2em; font-weight: bold; color: green;">
-            {preco_desejado}  </p>
-        <p style="margin-bottom: 0; font-size: 0.8em; max-width: 600px; overflow-wrap: break-word;">
-            <a href="{link_produto}" target="_blank">Acessar Produto (ABRIR NO NAVEGADOR)</a> </p>
+        <h2 style="margin-bottom: 0;">{nome_produto}</h2>
+        <p style="margin-bottom: 0; font-size: 1.2em; font-weight: bold; color: green;">{preco}</p>
     </div>
     """, unsafe_allow_html=True)
-    
-    html_content = f"""
-    <iframe 
-        src="{link_para_iframe}" 
-        width="{LARGURA_BASE_PIXELS}px" 
-        height="{ALTURA_BASE_PIXELS}px"
-        style="
-            border: 1px solid #ddd; /* Borda mais suave */
-            transform: scale({FATOR_ZOOM}); 
-            transform-origin: top left;
-            margin-top: 5px; 
-        " 
-    ></iframe>
-    """
 
-    # Exibe o componente HTML/iFrame
-    st.components.v1.html(html_content, height=ALTURA_FINAL_STREAMLIT)
-    
-    # SEPARADOR VISUAL entre os produtos
+    # --- Shopee (usa preview) ---
+    if "shopee.com.br" in link:
+        titulo, imagem, preco_meta = preview_shopee(link)
+        st.markdown(f"""
+        <a href="{link}" target="_blank">
+            <div class="card">
+                <img src="{imagem}">
+                <div>
+                    <h4>{titulo}</h4>
+                    <p><b>💰 {preco_meta}</b></p>
+                    <p style="color:#888;font-size:0.9em;">Abrir na Shopee ↗️</p>
+                </div>
+            </div>
+        </a>
+        """, unsafe_allow_html=True)
+
+    # --- Centauro (usa iframe normal) ---
+    else:
+        iframe = f"""
+        <iframe src="{link}" width="{LARGURA_BASE_PIXELS}px" height="{ALTURA_BASE_PIXELS}px"
+        style="border:1px solid #ddd; transform: scale({FATOR_ZOOM}); transform-origin: top left;"></iframe>
+        """
+        html(iframe, height=ALTURA_FINAL_STREAMLIT)
+
     st.markdown("---")

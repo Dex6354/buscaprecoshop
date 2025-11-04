@@ -52,8 +52,8 @@ for i, (link_produto, preco_desejado) in enumerate(precos_fixos.items()):
     st.markdown(f"""
     <div style="display: flex; align-items: baseline; gap: 15px; margin-bottom: -10px;">
         <h2 style="margin-bottom: 0; color: #333;">{nome_produto}.</h2>
-        <p style="margin-bottom: 0; font-size: 1.2em; font-weight: bold;">
-            Preço Fixo: {preco_desejado}
+        <p style="margin-bottom: 0; font-size: 1.2em; font-weight: bold; color: green;">
+            {preco_desejado}
         </p>
         <p style="margin-bottom: 0; font-size: 0.8em; max-width: 600px; overflow-wrap: break-word;">
             <a href="{link_produto}" target="_blank">Acessar Produto</a>

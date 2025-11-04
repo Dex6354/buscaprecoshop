@@ -6,6 +6,22 @@ st.set_page_config(
     page_title="Monitor de Preços - Embed Centauro"
 )
 
+# --- CSS PARA REMOVER O CABEÇALHO PADRÃO ---
+# Oculta o cabeçalho que contém o menu (três pontos) e o link "Deploy"
+st.markdown(
+    """
+    <style>
+        [data-testid="stHeader"] {
+            visibility: hidden;
+            height: 0%;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+# --- FIM DO CSS ---
+
+
 # --- Configurações de Tamanho e Zoom ---
 # O FATOR_ZOOM controla o quão pequeno o conteúdo aparecerá (0.4 = 40% do tamanho original)
 FATOR_ZOOM = 0.5
@@ -32,17 +48,22 @@ lista_de_urls = [
     "https://www.centauro.com.br/bermuda-masculina-oxer-mesh-mescla-983436.html?cor=MS",
 ]
 
-st.title("Monitor de Preços")
+# Título principal diminuído (usando h2 em vez de h1)
+st.header("Monitor de Preços")
 
 # Usamos enumerate para obter o índice (i) e a URL (link_produto)
 for i, link_produto in enumerate(lista_de_urls):
     
     nome_produto = f"#{i + 1}" 
     
-    st.header(nome_produto)
-    
-    # Exibe o link original
-    st.markdown(f"**Link Original:** [{link_produto}]({link_produto})", unsafe_allow_html=True)
+    # --- AJUSTE: Título e Link na mesma linha ---
+    # Usamos HTML/CSS (display: flex) para alinhar os dois elementos horizontalmente.
+    st.markdown(f"""
+    <div style="display: flex; align-items: baseline; gap: 15px; margin-bottom: -10px;">
+        <h2 style="margin-bottom: 0;">{nome_produto}</h2>
+        <p style="margin-bottom: 0;"><strong>Link Original:</strong> <a href="{link_produto}" target="_blank">{link_produto}</a></p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # --- AJUSTES COM CSS TRANSFORM: SCALE ---
     

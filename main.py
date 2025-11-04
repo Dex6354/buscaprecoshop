@@ -6,7 +6,7 @@ st.set_page_config(
     page_title="Monitor de Preços - Embed Centauro"
 )
 
-# 1. Mantenha o cabeçalho padrão do Streamlit oculto
+# 1. REFINANDO O CSS PARA FORÇAR O CONTEÚDO AO TOPO
 st.markdown(
     """
     <style>
@@ -15,14 +15,24 @@ st.markdown(
             visibility: hidden;
             height: 0%;
         }
-        /* Opcional: Reduz a margem superior do corpo para aproximar o conteúdo do topo */
+        
+        /* **AÇÃO PRINCIPAL AQUI:** Remove o padding superior padrão do corpo da aplicação Streamlit */
         .stApp {
-            padding-top: 0.5rem; /* Pequeno espaço, se necessário, ou remova para 0 */
+            padding-top: 0px !important; /* Remove qualquer espaço superior */
         }
-        /* Estilo para o título que está no topo, removendo margem superior padrão se houver */
+
+        /* Estilo para o título que está no topo, garantindo que não tenha margem */
         #titulo-principal {
             margin-top: 0px !important;
             padding-top: 0px !important;
+            /* Adicionando uma margem inferior pequena para separar do conteúdo abaixo */
+            margin-bottom: 15px !important; 
+        }
+
+        /* Ajuste opcional para o container flex dos links abaixo, para maior proximidade com o título principal */
+        .produto-header-container {
+            margin-top: 20px;
+            margin-bottom: -10px;
         }
     </style>
     """,
@@ -30,9 +40,7 @@ st.markdown(
 )
 
 # 2. Coloque o Título Principal Imediatamente no Topo
-# Usamos st.markdown com um ID para aplicar um estilo mais agressivo se necessário,
-# mas vamos começar com um st.title ou st.header com estilo para garantir o topo.
-# Usando st.markdown com h1 para ter mais controle sobre o estilo, e adicionando o ID
+# Usamos um H1 estilizado para ser o topo da página.
 st.markdown(
     '<h1 id="titulo-principal">Monitor de Preços</h1>',
     unsafe_allow_html=True
@@ -41,12 +49,11 @@ st.markdown(
 
 FATOR_ZOOM = 0.5
 
-LARGURA_BASE_PIXELS = "150%" # Tamanho base para o conteúdo caber
-ALTURA_BASE_PIXELS = 1000  # Tamanho base para o conteúdo caber
+LARGURA_BASE_PIXELS = "150%" 
+ALTURA_BASE_PIXELS = 1000
 
-BUFFER_ALTURA_STREAMLIT = 30 # Espaço extra para a rolagem do componente
+BUFFER_ALTURA_STREAMLIT = 30 
 
-# Calcula a altura final do componente Streamlit (altura base escalada + buffer)
 ALTURA_FINAL_STREAMLIT = int(ALTURA_BASE_PIXELS * FATOR_ZOOM) + BUFFER_ALTURA_STREAMLIT
 
 lista_de_urls = [
@@ -54,17 +61,14 @@ lista_de_urls = [
     "https://www.centauro.com.br/bermuda-masculina-oxer-mesh-mescla-983436.html?cor=MS",
 ]
 
-# O st.header anterior foi substituído pelo st.markdown acima.
-# Abaixo, mantemos a estrutura de títulos para cada produto como estava:
-
 # Usamos enumerate para obter o índice (i) e a URL (link_produto)
 for i, link_produto in enumerate(lista_de_urls):
     
     nome_produto = f"#{i + 1}" 
     
-    # Usamos HTML/CSS (display: flex) para alinhar os dois elementos horizontalmente.
+    # Usamos uma classe CSS customizada para este container
     st.markdown(f"""
-    <div style="display: flex; align-items: baseline; gap: 15px; margin-top: 20px; margin-bottom: -10px;">
+    <div class="produto-header-container" style="display: flex; align-items: baseline; gap: 15px;">
         <h2 style="margin-bottom: 0;">{nome_produto}</h2>
         <p style="margin-bottom: 0;"><strong>Link Original:</strong> <a href="{link_produto}" target="_blank">{link_produto}</a></p>
     </div>
@@ -76,7 +80,7 @@ for i, link_produto in enumerate(lista_de_urls):
         width="{LARGURA_BASE_PIXELS}px" 
         height="{ALTURA_BASE_PIXELS}px"
         style="
-            border: 1px solid #ccc; /* Para visualização */
+            border: 1px solid #ccc; 
             transform: scale({FATOR_ZOOM}); 
             transform-origin: top left;
             margin-top: 20px;
@@ -84,8 +88,6 @@ for i, link_produto in enumerate(lista_de_urls):
     ></iframe>
     """
 
-    # Exibe o componente HTML/iFrame
-    # IMPORTANTE: A altura (height) do st.components.v1.html deve refletir o TAMANHO FINAL ESCALADO
     st.components.v1.html(html_content, height=ALTURA_FINAL_STREAMLIT)
     
     # SEPARADOR VISUAL entre os produtos

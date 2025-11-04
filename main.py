@@ -51,7 +51,7 @@ for i, (link_produto, preco_desejado) in enumerate(precos_fixos.items()):
     # Usamos HTML/CSS (display: flex) para alinhar o número, o preço e a URL horizontalmente.
     st.markdown(f"""
     <div style="display: flex; align-items: baseline; gap: 15px; margin-bottom: -10px;">
-        <h2 style="margin-bottom: 0;">{nome_produto}</h2>
+        <h2 style="margin-bottom: 0;">{nome_produto} -</h2>
         <p style="margin-bottom: 0; font-size: 1.2em; font-weight: bold; color: green;">
             {preco_desejado}
         </p>

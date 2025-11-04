@@ -43,11 +43,7 @@ st.markdown(
 
 # 2. INSERÇÃO DO TÍTULO FIXO NO TOPO
 # Este H1 será fixo e ficará acima do conteúdo rolante abaixo
-st.markdown(
-    '<div id="titulo-topo"><h1>Monitor de Preços</h1></div>',
-    unsafe_allow_html=True
-)
-
+st.markdown('<h3 id="titulo-principal">Monitor de Preços</h3>', unsafe_allow_html=True)
 
 FATOR_ZOOM = 0.5
 

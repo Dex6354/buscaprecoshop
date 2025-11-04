@@ -46,7 +46,7 @@ for i, link_produto in enumerate(lista_de_urls):
     
     # Usamos HTML/CSS (display: flex) para alinhar os dois elementos horizontalmente.
     st.markdown(f"""
-    <div style="display: flex; align-items: baseline; gap: 15px; margin-bottom: -10px;">
+    <div style="display: flex; align-items: baseline; gap: 0px; margin-bottom: -10px;">
         <h2 style="margin-bottom: 0;">{nome_produto}</h2>
         <p style="margin-bottom: 0;"><a href="{link_produto}" target="_blank">{link_produto}</a></p>
     </div>

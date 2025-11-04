@@ -31,25 +31,33 @@ BUFFER_ALTURA_STREAMLIT = 30 # Espaço extra para a rolagem do componente
 # Calcula a altura final do componente Streamlit (altura base escalada + buffer)
 ALTURA_FINAL_STREAMLIT = int(ALTURA_BASE_PIXELS * FATOR_ZOOM) + BUFFER_ALTURA_STREAMLIT
 
-lista_de_urls = [
-    "https://www.centauro.com.br/bermuda-masculina-oxer-ls-basic-new-984889.html?cor=04",
-    "https://www.centauro.com.br/bermuda-masculina-oxer-mesh-mescla-983436.html?cor=MS",
-    "https://www.centauro.com.br/calcao-masculino-adams-liso-978059.html?cor=02",
-]
+# --- ESTRUTURA DE DADOS AJUSTADA ---
+# Dicionário onde a chave é a URL e o valor é o preço fixo desejado (como string)
+precos_fixos = {
+    "https://www.centauro.com.br/bermuda-masculina-oxer-ls-basic-new-984889.html?cor=04": "R$ 79,90",
+    "https://www.centauro.com.br/bermuda-masculina-oxer-mesh-mescla-983436.html?cor=MS": "R$ 50,00", # Exemplo que você forneceu
+    "https://www.centauro.com.br/calcao-masculino-adams-liso-978059.html?cor=02": "R$ 129,99",
+}
+# --- FIM DA ESTRUTURA ---
 
 # Título principal diminuído (usando h2 em vez de h1)
 st.markdown("<h6>🛒 Preços Mercados</h6>", unsafe_allow_html=True)
 
-# Usamos enumerate para obter o índice (i) e a URL (link_produto)
-for i, link_produto in enumerate(lista_de_urls):
+# Usamos .items() para obter a URL (link_produto) e o preço (preco_desejado)
+for i, (link_produto, preco_desejado) in enumerate(precos_fixos.items()):
     
-    nome_produto = f"{i + 1}" 
+    nome_produto = f"{i + 1}" # Você pode querer mudar isso para algo mais descritivo se a URL for longa
     
-    # Usamos HTML/CSS (display: flex) para alinhar os dois elementos horizontalmente.
+    # Usamos HTML/CSS (display: flex) para alinhar o número, o preço e a URL horizontalmente.
     st.markdown(f"""
-    <div style="display: flex; align-items: baseline; gap: 0px; margin-bottom: -20px;">
-        <h2 style="margin-bottom: 0;">{nome_produto}</h2>
-        <p style="margin-bottom: 0;"><a href="{link_produto}" target="_blank">{link_produto}</a></p>
+    <div style="display: flex; align-items: baseline; gap: 15px; margin-bottom: -10px;">
+        <h2 style="margin-bottom: 0; color: #333;">{nome_produto}.</h2>
+        <p style="margin-bottom: 0; font-size: 1.2em; font-weight: bold; color: green;">
+            Preço Fixo: {preco_desejado}
+        </p>
+        <p style="margin-bottom: 0; font-size: 0.8em; max-width: 600px; overflow-wrap: break-word;">
+            <a href="{link_produto}" target="_blank">Acessar Produto</a>
+        </p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -59,16 +67,15 @@ for i, link_produto in enumerate(lista_de_urls):
         width="{LARGURA_BASE_PIXELS}px" 
         height="{ALTURA_BASE_PIXELS}px"
         style="
-            border: 1px solid #ccc; /* Para visualização */
+            border: 1px solid #ddd; /* Borda mais suave */
             transform: scale({FATOR_ZOOM}); 
             transform-origin: top left;
-            margin-top: 5px;
+            margin-top: 5px; 
         " 
     ></iframe>
     """
 
     # Exibe o componente HTML/iFrame
-    # IMPORTANTE: A altura (height) do st.components.v1.html deve refletir o TAMANHO FINAL ESCALADO
     st.components.v1.html(html_content, height=ALTURA_FINAL_STREAMLIT)
     
     # SEPARADOR VISUAL entre os produtos

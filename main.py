@@ -73,40 +73,47 @@ precos_e_links = [
 st.markdown("<h6>🔎 Monitor de Preço</h6>", unsafe_allow_html=True)
 
 # Iteramos sobre a lista de tuplas: (Preço, Link)
+# Iteramos sobre a lista de tuplas: (Preço, Link)
 for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     
     # Pula itens sem link
     if not link_produto.strip():
         continue
     
-    # --- MODIFICAÇÃO PARA REMOVER 'www.' ---
-    # Tenta extrair o domínio do link para usar como texto
+    # --- MODIFICAÇÃO PARA FORMATAR O TEXTO ---
+    
+    # 1. Substitui espaços no preço por quebras de linha HTML (<br>)
+    texto_formatado = preco_desejado.replace(" ", "<br>")
+    
+    # 2. Tenta extrair o domínio do link para usar como texto
     try:
         parsed_url = urlparse(link_produto)
         texto_link = parsed_url.netloc 
         
-        # 🟢 NOVO AJUSTE: Remove "www." se estiver presente no início
+        # Remove "www." se estiver presente no início
         if texto_link.startswith("www."):
             texto_link = texto_link[4:]
         
-        # Se o netloc estiver vazio (link mal formatado?), usa um fallback
         if not texto_link:
             texto_link = "Ver Link"
     except Exception:
-        # Fallback genérico em caso de erro
         texto_link = "Acessar Produto"
     # --- FIM DA MODIFICAÇÃO ---
         
     nome_produto = f"{i + 1}" # Número de ordem
     
-    # Exibição: Ajustado para <h3> e gap menor para mais compactação
+    # Exibição: Layout ajustado para mostrar texto formatado e link em linhas separadas.
     st.markdown(f"""
-    <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: -10px;">
-        <h3 style="margin-bottom: 0;">{nome_produto})</h3>
-        <p style="margin-bottom: 0; font-size: 1.1em; font-weight: bold; color: green;">
-            {preco_desejado}  </p>
-        <p style="margin-bottom: 0; font-size: 0.8em; max-width: 600px; overflow-wrap: break-word;">
-            <a href="{link_produto}" target="_blank">{texto_link}</a> </p>
+    <div style="margin-bottom: -15px;">
+        <h3 style="margin-bottom: 5px;">{nome_produto})</h3>
+        
+        <p style="margin-bottom: 5px; font-size: 1.1em; font-weight: bold; color: green; line-height: 1.4;">
+            {texto_formatado} 
+        </p>
+        
+        <p style="margin-bottom: 5px; font-size: 0.8em; max-width: 600px; overflow-wrap: break-word;">
+            <a href="{link_produto}" target="_blank">{texto_link}</a> 
+        </p>
     </div>
     """, unsafe_allow_html=True)
     

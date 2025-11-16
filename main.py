@@ -1,5 +1,5 @@
 import streamlit as st
-from streamlit.components.v1 import html  # usada para injetar HTML cru (garante renderização)
+from streamlit.components.v1 import html # CORRIGIDO: Removido o caractere não-imprimível (U+00A0)
 from urllib.parse import urlparse 
 
 st.set_page_config(

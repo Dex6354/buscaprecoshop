@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="Monitor de Preços"
 )
 
-## 1. CSS (Com unsafe_allow_html=True)
+## 1. CSS (Oculta cabeçalho, footer e ajusta padding)
 st.markdown(
     """
     <style>
@@ -20,7 +20,7 @@ st.markdown(
         #MainMenu {visibility: hidden;}
     </style>
     """,
-    unsafe_allow_html=True,
+    unsafe_allow_html=True, # ESSENCIAL para aplicar o CSS
 )
 
 ## 2. Parâmetros de Tamanho
@@ -29,8 +29,6 @@ LARGURA_BASE_PIXELS = "125%"
 ALTURA_BASE_PIXELS = 800  
 BUFFER_ALTURA_STREAMLIT = 20 
 ALTURA_FINAL_STREAMLIT = int(ALTURA_BASE_PIXELS * FATOR_ZOOM) + BUFFER_ALTURA_STREAMLIT
-
-# Removido o '---' que causava SyntaxError.
 
 ## 3. Dados de Preço e Link
 precos_e_links = [
@@ -81,25 +79,27 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
 
     words = preco_desejado.split(' ')
     
-    if len(words) > 1 and (words[0] == 'R$' or words[0] == '👉R$'):
+    # Lógica de formatação de preço aprimorada
+    if len(words) >= 2 and (words[0] == 'R$' or words[0] == '👉R$'):
         first_line = words[0] + " " + words[1]
         rest_lines = words[2:]
-    else:
+    elif len(words) >= 1:
         first_line = words[0]
         rest_lines = words[1:]
-    
-    if rest_lines:
-        rest_lines_filtered = [line for line in rest_lines if line.strip()]
-        if rest_lines_filtered:
-            texto_formatado = first_line + "<br>" + "<br>".join(rest_lines_filtered)
-        else:
-            texto_formatado = first_line
+    else:
+        first_line = ""
+        rest_lines = []
+
+    # Junta as linhas extras com <br>
+    rest_lines_filtered = [line for line in rest_lines if line.strip()]
+    if rest_lines_filtered:
+        texto_formatado = first_line + "<br>" + "<br>".join(rest_lines_filtered)
     else:
         texto_formatado = first_line
         
     nome_produto = f"{i + 1}"
     
-    # 5. RENDERIZAÇÃO DO PREÇO/LINK (Usando st.markdown com safe_allow_html=True)
+    # --- RENDERIZAÇÃO DO PREÇO/LINK com HTML e unsafe_allow_html=True ---
     st.markdown(f"""
     <div style="margin-bottom: -15px;">
         <h3 style="margin-bottom: 5px;">{nome_produto})</h3>
@@ -112,9 +112,9 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
             <a href="{link_produto}" target="_blank">{texto_link}</a> 
         </p>
     </div>
-    """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True) # <-- ESTA FLAG GARANTE QUE O HTML SEJA RENDERIZADO
     
-    # 6. RENDERIZAÇÃO DO IFRAME (Usando st.components.v1.html)
+    # --- RENDERIZAÇÃO DO IFRAME ---
     html_content = f"""
     <iframe 
         src="{link_produto}" 
@@ -132,5 +132,5 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
 
     st.components.v1.html(html_content, height=ALTURA_FINAL_STREAMLIT)
     
-    # 7. Separador corrigido: Usando st.divider() em vez de '---'
+    # Substituído 'st.markdown("---")' por st.divider()
     st.divider()

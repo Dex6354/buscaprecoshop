@@ -27,7 +27,7 @@ st.markdown(
 FATOR_ZOOM = 0.4
 
 # Base de largura maior (pois será multiplicada por um zoom menor)
-LARGURA_BASE_PIXELS = "250%" 
+LARGURA_BASE_PIXELS = "150%" 
 # Altura base menor
 ALTURA_BASE_PIXELS = 800  
 

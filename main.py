@@ -7,8 +7,7 @@ st.set_page_config(
     page_title="Monitor de Preços"
 )
 
-# Este bloco aplica o CSS sem mostrá-lo na tela, 
-# graças ao 'unsafe_allow_html=True'.
+# 1. Este 'st.markdown' (para o CSS) PRECISA de 'unsafe_allow_html=True'
 st.markdown(
     """
     <style>
@@ -26,18 +25,10 @@ st.markdown(
 
 # --- PARÂMETROS DE TAMANHO AJUSTADOS ---
 
-# Fator de zoom menor para ver "de mais longe"
 FATOR_ZOOM = 0.4
-
-# Base de largura maior (pois será multiplicada por um zoom menor)
 LARGURA_BASE_PIXELS = "125%" 
-# Altura base menor
 ALTURA_BASE_PIXELS = 800  
-
-# Buffer (pode ser menor)
 BUFFER_ALTURA_STREAMLIT = 20 
-
-# Calcula a altura final do componente Streamlit (altura base escalada + buffer)
 ALTURA_FINAL_STREAMLIT = int(ALTURA_BASE_PIXELS * FATOR_ZOOM) + BUFFER_ALTURA_STREAMLIT
 
 # --- FIM DOS PARÂMETROS ---
@@ -70,19 +61,14 @@ precos_e_links = [
 
 ]
 
-# Título principal diminuído (usando h2 em vez de h1)
 st.markdown("<h6>🔎 Monitor de Preço</h6>", unsafe_allow_html=True)
 
-# Iteramos sobre a lista de tuplas: (Preço, Link)
 for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     
-    # Pula itens sem link
     if not link_produto.strip():
         continue
     
     # --- LÓGICA DE FORMATAÇÃO ---
-    
-    # 1. Extrai o domínio para o link
     try:
         parsed_url = urlparse(link_produto)
         texto_link = parsed_url.netloc 
@@ -93,32 +79,24 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     except Exception:
         texto_link = "Acessar Produto"
 
-    # 2. Formata o texto do preço com quebras de linha inteligentes
     words = preco_desejado.split(' ')
     
-    # Verifica se o primeiro item é 'R$' ou '👉R$' e o segundo é o valor
-    # Se sim, junta os dois para a primeira linha.
     if len(words) > 1 and (words[0] == 'R$' or words[0] == '👉R$'):
         first_line = words[0] + " " + words[1]
         rest_lines = words[2:]
-    # Senão, a primeira linha é apenas o primeiro item (ex: "R$2599")
     else:
         first_line = words[0]
         rest_lines = words[1:]
     
-    # Monta o texto final, adicionando <br> apenas entre as linhas restantes
     if rest_lines:
-        # Filtra strings vazias que podem surgir de espaços duplicados
         rest_lines_filtered = [line for line in rest_lines if line.strip()]
         texto_formatado = first_line + "<br>" + "<br>".join(rest_lines_filtered)
     else:
         texto_formatado = first_line
         
-    # --- FIM DA CORREÇÃO ---
-        
-    nome_produto = f"{i + 1}" # Número de ordem
+    nome_produto = f"{i + 1}"
     
-    # Exibição: Layout ajustado para mostrar texto formatado e link em linhas separadas.
+    # 2. Este 'st.markdown' (para o Preço/Link) TAMBÉM PRECISA de 'unsafe_allow_html=True'
     st.markdown(f"""
     <div style="margin-bottom: -15px;">
         <h3 style="margin-bottom: 5px;">{nome_produto})</h3>
@@ -131,7 +109,7 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
             <a href="{link_produto}" target="_blank">{texto_link}</a> 
         </p>
     </div>
-    """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True) # <-- A CORREÇÃO ESTÁ AQUI
     
     html_content = f"""
     <iframe 
@@ -140,7 +118,7 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
         height="{ALTURA_BASE_PIXELS}px"
         style="
             border: 1px solid #ddd;
-            border-radius: 8px; /* Borda arredondada para visual melhor */
+            border-radius: 8px;
             transform: scale({FATOR_ZOOM}); 
             transform-origin: top left;
             margin-top: 5px; 
@@ -148,8 +126,6 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     ></iframe>
     """
 
-    # Exibe o componente HTML/iFrame com a nova altura compacta
     st.components.v1.html(html_content, height=ALTURA_FINAL_STREAMLIT)
     
-    # SEPARADOR VISUAL entre os produtos
     st.markdown("---")

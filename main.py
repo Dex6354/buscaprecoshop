@@ -7,6 +7,8 @@ st.set_page_config(
     page_title="Monitor de Preços"
 )
 
+# Este bloco aplica o CSS sem mostrá-lo na tela, 
+# graças ao 'unsafe_allow_html=True'.
 st.markdown(
     """
     <style>
@@ -36,7 +38,6 @@ ALTURA_BASE_PIXELS = 800
 BUFFER_ALTURA_STREAMLIT = 20 
 
 # Calcula a altura final do componente Streamlit (altura base escalada + buffer)
-# (800 * 0.4) + 20 = 340px. (Original era 530px)
 ALTURA_FINAL_STREAMLIT = int(ALTURA_BASE_PIXELS * FATOR_ZOOM) + BUFFER_ALTURA_STREAMLIT
 
 # --- FIM DOS PARÂMETROS ---
@@ -73,32 +74,47 @@ precos_e_links = [
 st.markdown("<h6>🔎 Monitor de Preço</h6>", unsafe_allow_html=True)
 
 # Iteramos sobre a lista de tuplas: (Preço, Link)
-# Iteramos sobre a lista de tuplas: (Preço, Link)
 for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     
     # Pula itens sem link
     if not link_produto.strip():
         continue
     
-    # --- MODIFICAÇÃO PARA FORMATAR O TEXTO ---
+    # --- LÓGICA DE FORMATAÇÃO ---
     
-    # 1. Substitui espaços no preço por quebras de linha HTML (<br>)
-    texto_formatado = preco_desejado.replace(" ", "<br>")
-    
-    # 2. Tenta extrair o domínio do link para usar como texto
+    # 1. Extrai o domínio para o link
     try:
         parsed_url = urlparse(link_produto)
         texto_link = parsed_url.netloc 
-        
-        # Remove "www." se estiver presente no início
         if texto_link.startswith("www."):
             texto_link = texto_link[4:]
-        
         if not texto_link:
             texto_link = "Ver Link"
     except Exception:
         texto_link = "Acessar Produto"
-    # --- FIM DA MODIFICAÇÃO ---
+
+    # 2. Formata o texto do preço com quebras de linha inteligentes
+    words = preco_desejado.split(' ')
+    
+    # Verifica se o primeiro item é 'R$' ou '👉R$' e o segundo é o valor
+    # Se sim, junta os dois para a primeira linha.
+    if len(words) > 1 and (words[0] == 'R$' or words[0] == '👉R$'):
+        first_line = words[0] + " " + words[1]
+        rest_lines = words[2:]
+    # Senão, a primeira linha é apenas o primeiro item (ex: "R$2599")
+    else:
+        first_line = words[0]
+        rest_lines = words[1:]
+    
+    # Monta o texto final, adicionando <br> apenas entre as linhas restantes
+    if rest_lines:
+        # Filtra strings vazias que podem surgir de espaços duplicados
+        rest_lines_filtered = [line for line in rest_lines if line.strip()]
+        texto_formatado = first_line + "<br>" + "<br>".join(rest_lines_filtered)
+    else:
+        texto_formatado = first_line
+        
+    # --- FIM DA CORREÇÃO ---
         
     nome_produto = f"{i + 1}" # Número de ordem
     

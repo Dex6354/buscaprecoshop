@@ -36,98 +36,84 @@ precos_e_links = [
     ("R$ 33,24", "https://www.centauro.com.br/bermuda-masculina-oxer-elastic-984818.html?cor=02"),
     ("R$ ", "https://www.centauro.com.br/conjunto-de-agasalho-masculino-asics-com-capuz-interlock-fechado-976758.html?cor=02"),
     ("R$ 1794", "https://shopee.com.br/Xiaomi-Poco-X7-Pro-512GB-256GB-12-Ram-5G-Vers%C3%A3o-Global-NFC-Original-Lacrado-e-Envio-Imediato-ADS-i.1351433975.20698075298"),
-    ("👉R$ 2880 25,8kwh 399L teste", "https://www.consul.com.br/geladeira-consul-frost-free-duplex-com-freezer-embaixo-cre45mb/p"),
-
-    # ... (adicione o restante se quiser)
+    ("👉R$ 2880 25,8kwh 399L", "https://www.consul.com.br/geladeira-consul-frost-free-duplex-com-freezer-embaixo-cre45mb/p"),
 ]
 
 st.markdown("<h6>🔎 Monitor de Preço</h6>", unsafe_allow_html=True)
 
 # --------------------------
-# Função utilitária para estimar altura (em px) do bloco de texto
+# Função utilitária
 # --------------------------
 def estimate_text_block_height(html_text: str, base_width_px: int = 600) -> int:
-    """
-    Estima a altura necessária para um bloco HTML simples contendo algumas <br>.
-    """
-    # Conta quebras de linha explícitas <br>
     num_br = html_text.count("<br>")
-    # Conta comprimento aproximado sem tags
     text_only = html_text.replace("<br>", " ").replace("&nbsp;", " ")
     approx_chars = len(text_only)
-    # Estima número de "linhas" por largura
-    avg_chars_per_line = 40
-    est_lines_from_chars = math.ceil(approx_chars / avg_chars_per_line)
-    
-    # Considera pelo menos 1 linha de texto, mais as quebras explícitas
-    total_lines = max(1, 1 + num_br, est_lines_from_chars) 
-    
-    # Altura por linha (px) - conservador para garantir espaço
-    height_per_line = 20
-    # Altura para o H3 (Nome) + P (Preço) + P (Link)
-    total_estimated_height = (1 * height_per_line) + (total_lines * height_per_line) + (1 * height_per_line) 
-    padding = 20 # Adiciona padding extra para garantir a separação
-    return total_estimated_height + padding
+    est_lines = math.ceil(approx_chars / 40)
+    total_lines = max(1, 1 + num_br, est_lines)
+    return total_lines * 20 + 18
 
 # --------------------------
-# Loop de exibição
+# Loop
 # --------------------------
 for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     if not link_produto.strip():
         continue
 
-    # Extrai domínio para o texto do link
+    # extrai domínio
     try:
         parsed = urlparse(link_produto)
-        # Remove 'www.' para exibir apenas o domínio principal
-        texto_link = parsed.netloc.replace("www.", "") or "Ver Link" 
+        dominio = parsed.netloc.replace("www.", "") or "Ver produto"
     except:
-        texto_link = "Acessar Produto"
+        dominio = "Acessar produto"
 
-    # Monta texto formatado (com <br> para quebras explícitas)
+    # formata texto
     words = preco_desejado.split(" ")
     if len(words) >= 2 and (words[0] == "R$" or words[0] == "👉R$"):
         first_line = words[0] + " " + words[1]
         rest_lines = words[2:]
     else:
-        first_line = words[0] if words else ""
-        rest_lines = words[1:] if len(words) > 1 else []
-    rest_lines = [w for w in rest_lines if w.strip()]
-    if rest_lines:
-        # Adiciona quebras de linha entre as palavras restantes
-        texto_formatado = first_line + "<br>" + "<br>".join(rest_lines)
-    else:
-        texto_formatado = first_line
+        first_line = words[0]
+        rest_lines = words[1:]
 
+    rest_lines = [w for w in rest_lines if w.strip()]
+    texto_formatado = first_line + "<br>" + "<br>".join(rest_lines) if rest_lines else first_line
     nome_produto = f"{i + 1}"
 
-    # --- bloco HTML (renderizado via st.components.v1.html com altura estimada)
-    # Garante que o texto e o link sejam renderizados antes do iframe
+    # ---------------------------------------------
+    # BLOCO HTML COM Z-INDEX ALTO (na frente)
+    # ---------------------------------------------
     bloco_html = f"""
-    <div style="margin-bottom: 4px; font-family: Arial, Helvetica, sans-serif;">
-        <h3 style="margin:0 0 6px 0; font-size:16px;">{nome_produto})</h3>
+    <div style="margin-bottom: 4px; font-family: Arial, Helvetica, sans-serif;
+                position: relative; z-index: 5; background:white;">
+
+        <h3 style="margin:0 0 6px 0; font-size:16px;">
+            {nome_produto})
+        </h3>
+
         <p style="margin:0; font-size: 18px; font-weight: 700; color: green; line-height:1.3;">
             {texto_formatado}
         </p>
-        <p style="margin:6px 0 0 0; font-size: 13px; color: #333;">
-            <a href="{link_produto}" target="_blank" rel="noopener noreferrer">{texto_link}</a>
+
+        <p style="margin:6px 0 0 0; font-size: 13px; color:#333;">
+            🔗 <a href="{link_produto}" target="_blank" rel="noopener noreferrer">{dominio}</a>
         </p>
     </div>
     """
 
-    # Estima altura do bloco de texto e renderiza
-    # Aumentando o valor mínimo para dar mais espaço
-    bloco_height = estimate_text_block_height(texto_formatado) 
-    bloco_height = max(80, bloco_height) # Garante uma altura mínima maior (80px)
+    bloco_height = max(60, estimate_text_block_height(texto_formatado))
     html(bloco_html, height=bloco_height)
 
-    # --- iframe (componente separado; sempre renderizado DEPOIS do bloco de texto)
+    # ---------------------------------------------
+    # IFRAME COM Z-INDEX BAIXO (atrás)
+    # ---------------------------------------------
     iframe_html = f"""
     <iframe
         src="{link_produto}"
         width="{LARGURA_BASE_PIXELS}"
         height="{ALTURA_BASE_PIXELS}px"
         style="
+            position: relative;
+            z-index: 1;
             border: 1px solid #ddd;
             border-radius: 8px;
             transform: scale({FATOR_ZOOM});
@@ -136,7 +122,6 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
         ">
     </iframe>
     """
-    # Altura do html() que contém o iframe deve considerar o scale e um pequeno espaçamento
-    html(iframe_html, height=ALTURA_FINAL_STREAMLIT + 8)
 
+    html(iframe_html, height=ALTURA_FINAL_STREAMLIT + 8)
     st.divider()

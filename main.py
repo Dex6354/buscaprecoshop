@@ -7,7 +7,9 @@ st.set_page_config(
     page_title="Monitor de Preços"
 )
 
-# 1. Este 'st.markdown' (para o CSS) PRECISA de 'unsafe_allow_html=True'
+#
+# 1. LOCAL NÚMERO UM: O CSS PRECISA DESTA FLAG
+#
 st.markdown(
     """
     <style>
@@ -20,7 +22,7 @@ st.markdown(
         #MainMenu {visibility: hidden;}
     </style>
     """,
-    unsafe_allow_html=True,
+    unsafe_allow_html=True,  # <-- VERIFIQUE SE O SEU ESTÁ ASSIM
 )
 
 # --- PARÂMETROS DE TAMANHO AJUSTADOS ---
@@ -90,13 +92,18 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     
     if rest_lines:
         rest_lines_filtered = [line for line in rest_lines if line.strip()]
-        texto_formatado = first_line + "<br>" + "<br>".join(rest_lines_filtered)
+        if rest_lines_filtered:
+            texto_formatado = first_line + "<br>" + "<br>".join(rest_lines_filtered)
+        else:
+            texto_formatado = first_line
     else:
         texto_formatado = first_line
         
     nome_produto = f"{i + 1}"
     
-    # 2. Este 'st.markdown' (para o Preço/Link) TAMBÉM PRECISA de 'unsafe_allow_html=True'
+    #
+    # 2. LOCAL NÚMERO DOIS: O PREÇO/LINK PRECISA DESTA FLAG
+    #
     st.markdown(f"""
     <div style="margin-bottom: -15px;">
         <h3 style="margin-bottom: 5px;">{nome_produto})</h3>
@@ -109,7 +116,7 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
             <a href="{link_produto}" target="_blank">{texto_link}</a> 
         </p>
     </div>
-    """, unsafe_allow_html=True) # <-- A CORREÇÃO ESTÁ AQUI
+    """, unsafe_allow_html=True) # <-- ESTA É A CORREÇÃO CRÍTICA
     
     html_content = f"""
     <iframe 

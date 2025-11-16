@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit.components.v1 import html
-from urllib.parse import urlparse  # <-- 1. ADICIONADO ESTA IMPORTAÇÃO
+from urllib.parse import urlparse 
 
 st.set_page_config(
     layout="wide", 
@@ -79,12 +79,15 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     if not link_produto.strip():
         continue
     
-    # --- 2. MODIFICAÇÃO INICIADA ---
+    # --- MODIFICAÇÃO PARA REMOVER 'www.' ---
     # Tenta extrair o domínio do link para usar como texto
     try:
         parsed_url = urlparse(link_produto)
-        # 'netloc' é o domínio, ex: 'www.centauro.com.br'
         texto_link = parsed_url.netloc 
+        
+        # 🟢 NOVO AJUSTE: Remove "www." se estiver presente no início
+        if texto_link.startswith("www."):
+            texto_link = texto_link[4:]
         
         # Se o netloc estiver vazio (link mal formatado?), usa um fallback
         if not texto_link:

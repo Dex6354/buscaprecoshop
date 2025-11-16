@@ -1,5 +1,6 @@
 import streamlit as st
 from streamlit.components.v1 import html
+from urllib.parse import urlparse  # <-- 1. ADICIONADO ESTA IMPORTAÇÃO
 
 st.set_page_config(
     layout="wide", 
@@ -77,6 +78,21 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     # Pula itens sem link
     if not link_produto.strip():
         continue
+    
+    # --- 2. MODIFICAÇÃO INICIADA ---
+    # Tenta extrair o domínio do link para usar como texto
+    try:
+        parsed_url = urlparse(link_produto)
+        # 'netloc' é o domínio, ex: 'www.centauro.com.br'
+        texto_link = parsed_url.netloc 
+        
+        # Se o netloc estiver vazio (link mal formatado?), usa um fallback
+        if not texto_link:
+            texto_link = "Ver Link"
+    except Exception:
+        # Fallback genérico em caso de erro
+        texto_link = "Acessar Produto"
+    # --- FIM DA MODIFICAÇÃO ---
         
     nome_produto = f"{i + 1}" # Número de ordem
     
@@ -87,7 +103,7 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
         <p style="margin-bottom: 0; font-size: 1.1em; font-weight: bold; color: green;">
             {preco_desejado}  </p>
         <p style="margin-bottom: 0; font-size: 0.8em; max-width: 600px; overflow-wrap: break-word;">
-            <a href="{link_produto}" target="_blank">Acessar Produto</a> </p>
+            <a href="{link_produto}" target="_blank">{texto_link}</a> </p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -111,3 +127,5 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     
     # SEPARADOR VISUAL entre os produtos
     st.markdown("---")
+
+}

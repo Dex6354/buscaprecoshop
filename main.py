@@ -32,8 +32,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
----
-
 ## 2. Parâmetros de Exibição
 # --- PARÂMETROS DE TAMANHO AJUSTADOS ---
 

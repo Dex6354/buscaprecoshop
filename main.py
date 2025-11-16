@@ -126,6 +126,4 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     st.components.v1.html(html_content, height=ALTURA_FINAL_STREAMLIT)
     
     # SEPARADOR VISUAL entre os produtos
-    st.markdown("---")
-
-}
+    st.markdown("---")}

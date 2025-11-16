@@ -73,8 +73,6 @@ precos_e_links = [
     ("R$ ", ""), # Item vazio (será ignorado)
 ]
 
----
-
 ## 4. Renderização dos Itens
 
 st.markdown("<h6>🔎 Monitor de Preço</h6>", unsafe_allow_html=True)

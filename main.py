@@ -42,18 +42,15 @@ precos_e_links = [
 st.markdown("<h6>🔎 Monitor de Preço</h6>", unsafe_allow_html=True)
 
 # --------------------------
-# Função utilitária para estimar altura (em px) do bloco de texto
+# Função para estimar altura
 # --------------------------
 def estimate_text_block_height(html_text: str, base_width_px: int = 600) -> int:
     num_br = html_text.count("<br>")
     text_only = html_text.replace("<br>", " ").replace("&nbsp;", " ")
     approx_chars = len(text_only)
-    avg_chars_per_line = 40
-    est_lines_from_chars = math.ceil(approx_chars / avg_chars_per_line)
-    total_lines = max(1, 1 + num_br, est_lines_from_chars)
-    height_per_line = 20
-    padding = 18
-    return total_lines * height_per_line + padding
+    est_lines = math.ceil(approx_chars / 40)
+    total_lines = max(1, 1 + num_br, est_lines)
+    return total_lines * 20 + 18
 
 # --------------------------
 # Loop de exibição
@@ -62,42 +59,57 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     if not link_produto.strip():
         continue
 
+    # Extrai domínio
     try:
         parsed = urlparse(link_produto)
-        texto_link = parsed.netloc.replace("www.", "") or "Ver Link"
+        dominio = parsed.netloc.replace("www.", "") or "Ver produto"
     except:
-        texto_link = "Acessar Produto"
+        dominio = "Acessar produto"
 
+    # Formata texto
     words = preco_desejado.split(" ")
     if len(words) >= 2 and (words[0] == "R$" or words[0] == "👉R$"):
         first_line = words[0] + " " + words[1]
         rest_lines = words[2:]
     else:
-        first_line = words[0] if words else ""
-        rest_lines = words[1:] if len(words) > 1 else []
+        first_line = words[0]
+        rest_lines = words[1:]
 
     rest_lines = [w for w in rest_lines if w.strip()]
     texto_formatado = first_line + "<br>" + "<br>".join(rest_lines) if rest_lines else first_line
+
     nome_produto = f"{i + 1}"
 
-    # --- Bloco com hiperlink incluído ---
+    # -------------------------------
+    # BLOCO HTML (com domínio embaixo)
+    # -------------------------------
     bloco_html = f"""
     <div style="margin-bottom: 4px; font-family: Arial, Helvetica, sans-serif;">
-        <h3 style="margin:0 0 6px 0; font-size:16px;">{nome_produto})</h3>
+
+        <h3 style="margin:0 0 6px 0; font-size:16px;">
+            {nome_produto})
+        </h3>
 
         <p style="margin:0; font-size: 18px; font-weight: 700; color: green; line-height:1.3;">
             {texto_formatado}
         </p>
 
-        <p style="margin:6px 0 0 0; font-size: 13px; color: #333;">
-            🔗 <a href="{link_produto}" target="_blank" rel="noopener noreferrer">{texto_link}</a>
+        <!-- Domínio como hiperlink -->
+        <p style="margin:6px 0 0 0; font-size: 13px; color:#333;">
+            🔗 <a href="{link_produto}" target="_blank" rel="noopener noreferrer">
+                {dominio}
+            </a>
         </p>
+
     </div>
     """
 
     bloco_height = max(60, estimate_text_block_height(texto_formatado))
     html(bloco_html, height=bloco_height)
 
+    # -------------------------------
+    # IFRAME DO PRODUTO
+    # -------------------------------
     iframe_html = f"""
     <iframe
         src="{link_produto}"

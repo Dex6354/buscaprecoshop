@@ -49,7 +49,6 @@ st.markdown("<h6>🔎 Monitor de Preço</h6>", unsafe_allow_html=True)
 def estimate_text_block_height(html_text: str, base_width_px: int = 600) -> int:
     """
     Estima a altura necessária para um bloco HTML simples contendo algumas <br>.
-    Não é perfeito, mas é conservador o suficiente para evitar sobreposição.
     """
     # Conta quebras de linha explícitas <br>
     num_br = html_text.count("<br>")
@@ -57,13 +56,18 @@ def estimate_text_block_height(html_text: str, base_width_px: int = 600) -> int:
     text_only = html_text.replace("<br>", " ").replace("&nbsp;", " ")
     approx_chars = len(text_only)
     # Estima número de "linhas" por largura
-    avg_chars_per_line = 40  # chute conservador (a depender do tamanho da fonte)
+    avg_chars_per_line = 40
     est_lines_from_chars = math.ceil(approx_chars / avg_chars_per_line)
-    total_lines = max(1, 1 + num_br, est_lines_from_chars)
-    # Altura por linha (px) - conservador
+    
+    # Considera pelo menos 1 linha de texto, mais as quebras explícitas
+    total_lines = max(1, 1 + num_br, est_lines_from_chars) 
+    
+    # Altura por linha (px) - conservador para garantir espaço
     height_per_line = 20
-    padding = 18  # top+bottom padding
-    return total_lines * height_per_line + padding
+    # Altura para o H3 (Nome) + P (Preço) + P (Link)
+    total_estimated_height = (1 * height_per_line) + (total_lines * height_per_line) + (1 * height_per_line) 
+    padding = 20 # Adiciona padding extra para garantir a separação
+    return total_estimated_height + padding
 
 # --------------------------
 # Loop de exibição
@@ -98,6 +102,7 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     nome_produto = f"{i + 1}"
 
     # --- bloco HTML (renderizado via st.components.v1.html com altura estimada)
+    # Garante que o texto e o link sejam renderizados antes do iframe
     bloco_html = f"""
     <div style="margin-bottom: 4px; font-family: Arial, Helvetica, sans-serif;">
         <h3 style="margin:0 0 6px 0; font-size:16px;">{nome_produto})</h3>
@@ -110,13 +115,13 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     </div>
     """
 
-    # Estima altura do bloco de texto e renderiza (altura dinamica evita corte/sobreposição)
-    bloco_height = estimate_text_block_height(texto_formatado)
-    # adiciona um mínimo seguro
-    bloco_height = max(60, bloco_height)
+    # Estima altura do bloco de texto e renderiza
+    # Aumentando o valor mínimo para dar mais espaço
+    bloco_height = estimate_text_block_height(texto_formatado) 
+    bloco_height = max(80, bloco_height) # Garante uma altura mínima maior (80px)
     html(bloco_html, height=bloco_height)
 
-    # --- iframe (componente separado; sempre renderizado depois do bloco de texto)
+    # --- iframe (componente separado; sempre renderizado DEPOIS do bloco de texto)
     iframe_html = f"""
     <iframe
         src="{link_produto}"

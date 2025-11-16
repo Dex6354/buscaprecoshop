@@ -1,5 +1,5 @@
 import streamlit as st
-from streamlit.components.v1 import html
+from streamlit.components.v1 import html  # usada para injetar HTML cru (garante renderização)
 from urllib.parse import urlparse 
 
 st.set_page_config(
@@ -102,24 +102,28 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     nome_produto = f"{i + 1}"
 
     # --------------------------
-    # Render Preço + Link
+    # Render Preço + Link (USANDO st.components.v1.html PARA GARANTIR RENDER HTML)
     # --------------------------
-    st.markdown(f"""
-        <div style="margin-bottom: -15px;">
-            <h3 style="margin-bottom: 5px;">{nome_produto})</h3>
-            
-            <p style="margin-bottom: 5px; font-size: 1.1em; font-weight: bold; color: green; line-height: 1.4;">
-                {texto_formatado}
-            </p>
+    bloco_html = f"""
+    <div style="margin-bottom: -15px;">
+        <h3 style="margin-bottom: 5px;">{nome_produto})</h3>
+        
+        <p style="margin-bottom: 5px; font-size: 1.1em; font-weight: bold; color: green; line-height: 1.4;">
+            {texto_formatado}
+        </p>
+        
+        <p style="margin-bottom: 5px; font-size: 0.8em; max-width: 600px; overflow-wrap: break-word;">
+            <a href="{link_produto}" target="_blank">{texto_link}</a>
+        </p>
+    </div>
+    """
 
-            <p style="margin-bottom: 5px; font-size: 0.8em; max-width: 600px; overflow-wrap: break-word;">
-                <a href="{link_produto}" target="_blank">{texto_link}</a>
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
+    # Aqui usamos html(...) (do streamlit.components.v1) para injetar o HTML sem escape.
+    # Ajuste height se quiser reduzir o espaço reservado.
+    html(bloco_html, height=90)
 
     # --------------------------
-    # Iframe
+    # Iframe (continua igual — também usa html())
     # --------------------------
     iframe_html = f"""
     <iframe 
@@ -135,7 +139,6 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
         ">
     </iframe>
     """
-
     html(iframe_html, height=ALTURA_FINAL_STREAMLIT)
 
     st.divider()

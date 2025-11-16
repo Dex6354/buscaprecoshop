@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="Monitor de Preços"
 )
 
-# 1. CSS (COM o parâmetro)
+# 1. CSS (Com unsafe_allow_html=True)
 st.markdown(
     """
     <style>
@@ -99,9 +99,7 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
         
     nome_produto = f"{i + 1}"
     
-    #
-    # 2. O PREÇO/LINK (COM o parâmetro)
-    #
+    # 2. O PREÇO/LINK NO LOOP (Com unsafe_allow_html=True)
     st.markdown(f"""
     <div style="margin-bottom: -15px;">
         <h3 style="margin-bottom: 5px;">{nome_produto})</h3>
@@ -114,7 +112,7 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
             <a href="{link_produto}" target="_blank">{texto_link}</a> 
         </p>
     </div>
-    """, unsafe_allow_html=True) # <-- ESTA LINHA É A MAIS IMPORTANTE
+    """, unsafe_allow_html=True)
     
     html_content = f"""
     <iframe 

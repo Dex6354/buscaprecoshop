@@ -7,9 +7,7 @@ st.set_page_config(
     page_title="Monitor de Preços"
 )
 
-#
-# 1. LOCAL NÚMERO UM: O CSS PRECISA DESTA FLAG
-#
+# 1. CSS (COM o parâmetro)
 st.markdown(
     """
     <style>
@@ -22,7 +20,7 @@ st.markdown(
         #MainMenu {visibility: hidden;}
     </style>
     """,
-    unsafe_allow_html=True,  # <-- VERIFIQUE SE O SEU ESTÁ ASSIM
+    unsafe_allow_html=True,
 )
 
 # --- PARÂMETROS DE TAMANHO AJUSTADOS ---
@@ -48,7 +46,7 @@ precos_e_links = [
     ("R$ ", "https://www.centauro.com.br/conjuto-de-agasalho-masculino-asics-interlock-bolso-fusionado-976753.html?cor=02"),
     ("R$ ", "https://www.centauro.com.br/conjunto-de-agasalho-masculino-asics-com-capuz-interlock-fechado-976758.html?cor=02"),
     ("R$ 1794", "https://shopee.com.br/Xiaomi-Poco-X7-Pro-512GB-256GB-12-Ram-5G-Vers%C3%A3o-Global-NFC-Original-Lacrado-e-Envio-Imediato-ADS-i.1351433975.20698075298"),
-("👉R$ 2880 25,8kwh 399L", "https://www.consul.com.br/geladeira-consul-frost-free-duplex-com-freezer-embaixo-cre45mb/p"),
+("👉R$ 2880 25,8kwh 39L", "https://www.consul.com.br/geladeira-consul-frost-free-duplex-com-freezer-embaixo-cre45mb/p"),
 ("👉R$ 2.659,05 39,7kwh 390L", "https://www.buscape.com.br/geladeira/geladeira-electrolux-efficient-if43-frost-free-duplex-390-litros?_lc=88&searchterm=Geladeira%20Electrolux%20Frost%20Free%20320L%20Duplex%20Branca"),
 ("👉R$ 2417,07 24,9kwh CRM44MB 377L", "https://www.compracerta.com.br/geladeira-frost-free-duplex-consul---crm44mb-20124213/p"),
 ("👉R$ 2570 24,9kwh 377L", "https://www.consul.com.br/geladeira-frost-free-duplex-consul-crm44mb/p?idsku=326183363&skuId=326183363&utm_campaign=comparador_mpi_d2c&utm_medium=comparadores&utm_source=zoom&utm_term=c2145529c657414290fbf27d974defa5&utmi_campaign=pla&utmi_cp=pla"),
@@ -102,7 +100,7 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     nome_produto = f"{i + 1}"
     
     #
-    # 2. LOCAL NÚMERO DOIS: O PREÇO/LINK PRECISA DESTA FLAG
+    # 2. O PREÇO/LINK (COM o parâmetro)
     #
     st.markdown(f"""
     <div style="margin-bottom: -15px;">
@@ -116,7 +114,7 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
             <a href="{link_produto}" target="_blank">{texto_link}</a> 
         </p>
     </div>
-    """, unsafe_allow_html=True) # <-- ESTA É A CORREÇÃO CRÍTICA
+    """, unsafe_allow_html=True) # <-- ESTA LINHA É A MAIS IMPORTANTE
     
     html_content = f"""
     <iframe 

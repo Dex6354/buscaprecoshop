@@ -135,7 +135,7 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     # Garante que o texto e o link sejam renderizados antes do iframe
     bloco_html = f"""
     <div style="margin-bottom: 4px; font-family: Arial, Helvetica, sans-serif;">
-        <h3 style="margin:0 0 6px 0; font-size:16px;">{nome_produto})</h3>
+        <h3 style="margin:0 0 6px 0; font-size:16px; color:white;">{nome_produto})</h3>
         <p style="margin:0; font-size: 18px; font-weight: 700; color: green; line-height:1.3;">
             {texto_formatado}
         </p>

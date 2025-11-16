@@ -47,8 +47,6 @@ ALTURA_FINAL_STREAMLIT = int(ALTURA_BASE_PIXELS * FATOR_ZOOM) + BUFFER_ALTURA_ST
 
 # --- FIM DOS PARÂMETROS ---
 
----
-
 ## 3. Dados de Preço e Link
 precos_e_links = [
     ("R$ 1600", "https://www.tudocelular.com/Poco/precos/n9834/Poco-X7-Pro.html"),

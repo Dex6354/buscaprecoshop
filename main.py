@@ -72,7 +72,7 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     if not link_produto.strip():
         continue
 
-    # Extrai domínio
+    # Extrai domínio para o texto do link
     try:
         parsed = urlparse(link_produto)
         texto_link = parsed.netloc.replace("www.", "") or "Ver Link"
@@ -89,6 +89,7 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
         rest_lines = words[1:] if len(words) > 1 else []
     rest_lines = [w for w in rest_lines if w.strip()]
     if rest_lines:
+        # Adiciona quebras de linha entre as palavras restantes
         texto_formatado = first_line + "<br>" + "<br>".join(rest_lines)
     else:
         texto_formatado = first_line
@@ -96,6 +97,7 @@ for i, (preco_desejado, link_produto) in enumerate(precos_e_links):
     nome_produto = f"{i + 1}"
 
     # --- bloco HTML (renderizado via st.components.v1.html com altura estimada)
+    # *Contém o hiperlink do produto através da tag <a>*
     bloco_html = f"""
     <div style="margin-bottom: 4px; font-family: Arial, Helvetica, sans-serif;">
         <h3 style="margin:0 0 6px 0; font-size:16px;">{nome_produto})</h3>
